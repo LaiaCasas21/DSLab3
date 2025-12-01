@@ -1,6 +1,7 @@
 package model;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -140,6 +141,34 @@ public class Joc {
                 dataRetirada,
                 EstatJoc.RETIRAT
         );
+    }
+    /**
+     * Formata els detalls del joc en una cadena llegible.
+     *
+     * @return Una cadena amb els detalls formatats del joc.
+     */
+    public String formatarDetalls() {
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+        String titolFormatat = String.format("\"%s\"", this.titol);
+        String generesFormatat = String.join(", ", this.generes);
+        String desenvolupadoresFormatat = String.join(", ", this.desenvolupadores);
+        String distribuidoresFormatat = String.join(", ", this.distribuidores);
+        String dataAnunciStr = this.dataAnunci != null ? this.dataAnunci.format(pattern) : "N/A";
+        String dataLlancamentStr = this.dataLlancament != null ? this.dataLlancament.format(pattern) : "N/A";
+        String dataRetiradaStr = this.dataRetirada != null ? this.dataRetirada.format(pattern) : "N/A";
+
+        StringBuilder details = new StringBuilder();
+        details.append("Títol: ").append(titolFormatat).append("\n")
+                .append("Gènere(s): ").append(generesFormatat).append("\n")
+                .append("Desenvolupadora(es): ").append(desenvolupadoresFormatat).append("\n")
+                .append("Distribuïdora(es): ").append(distribuidoresFormatat).append("\n")
+                .append("Data d'anunci: ").append(dataAnunciStr).append("\n")
+                .append("Data de llançament: ").append(dataLlancamentStr).append("\n")
+                .append("Data de retirada: ").append(dataRetiradaStr).append("\n")
+                .append("Estat: ").append(this.estatJoc);
+
+        return details.toString();
     }
 
 }

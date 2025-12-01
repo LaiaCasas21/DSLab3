@@ -3,7 +3,7 @@ package controlador;
 import controlador.interfaces.IDataService;
 import model.*;
 import model.excepcions.*;
-import utils.FormattadorLlista;
+import model.FormattadorLlista;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -116,13 +116,24 @@ public class Controlador {
         }
     }
 
+    /**
+     * Visualitza la llista de jocs adquirits per un usuari ordenats per nom.
+     */
     public String visualitzarLlistaJocsAdquiritsPerUsuari(String email) {
         try {
+            // CarteraUsuaris és l'expert en usuaris i les seves adquisicions
             List<Adquisicio> adquisicions = carteraUsuaris.getAdquisicionsDeUsuariOrdenadesPerNom(email);
+
+            // Extracció dels títols
             List<String> titols = adquisicions.stream()
                     .map(Adquisicio::getTitolJoc)
                     .collect(Collectors.toList());
-            return "Llista de jocs adquirits per l'usuari:\n" + String.join("\n", titols);
+
+            // FormattadorLlista és l'expert en formatar llistes
+            return FormattadorLlista.formatarLlistaAmbTitol(
+                    "Llista de jocs adquirits per l'usuari:",
+                    titols
+            );
         } catch (Exception e) {
             return MessagesCAT.translate(e);
         }
@@ -130,26 +141,11 @@ public class Controlador {
 
     public String veureDetallsJoc(String titol) {
         try {
+            // CatalegJocs és l'expert en trobar jocs
             Joc joc = catalegJocs.findByTitol(titol);
-            String titolFormatat = String.format("\"%s\"", joc.getTitol());
-            String generesFormatat = String.join(", ", joc.getGeneres());
-            String desenvolupadoresFormatat = String.join(", ", joc.getDesenvolupadores());
-            String distribuidoresFormatat = String.join(", ", joc.getDistribuidores());
-            DateTimeFormatter pattern = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            String dataAnunci = joc.getDataAnunci() != null ? joc.getDataAnunci().format(pattern) : "N/A";
-            String dataLlancament = joc.getDataLlancament() != null ? joc.getDataLlancament().format(pattern) : "N/A";
-            String dataRetirada = joc.getDataRetirada() != null ? joc.getDataRetirada().format(pattern) : "N/A";
 
-            StringBuilder details = new StringBuilder();
-            details.append("Títol: ").append(titolFormatat).append("\n")
-                    .append("Gènere(s): ").append(generesFormatat).append("\n")
-                    .append("Desenvolupadora(es): ").append(desenvolupadoresFormatat).append("\n")
-                    .append("Distribuïdora(es): ").append(distribuidoresFormatat).append("\n")
-                    .append("Data d'anunci: ").append(dataAnunci).append("\n")
-                    .append("Data de llançament: ").append(dataLlancament).append("\n")
-                    .append("Data de retirada: ").append(dataRetirada).append("\n")
-                    .append("Estat: ").append(joc.getEstat());
-            return details.toString();
+            // Joc és l'expert en presentar els seus propis detalls
+            return joc.formatarDetalls();
         } catch (Exception e) {
             return MessagesCAT.translate(e);
         }
