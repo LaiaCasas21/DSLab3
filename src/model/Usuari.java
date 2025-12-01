@@ -1,5 +1,7 @@
 package model;
 
+import model.excepcions.IncorrectPasswordException;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +63,15 @@ public class Usuari {
             }
         }
         return null;
+    }
+
+    /**
+     * Valida la contrasenya proporcionada amb la contrasenya de l'usuari.
+     */
+    public void validarContrasenya(String contrasenyaProporcionada) throws Exception {
+        if (!this.contrasenya.equals(contrasenyaProporcionada)) {
+            throw new IncorrectPasswordException();
+        }
     }
 
 }

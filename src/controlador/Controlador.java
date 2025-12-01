@@ -64,8 +64,12 @@ public class Controlador {
         }
     }
 
+    /**
+     * Logueja un usuari amb l'email i la contrasenya proporcionats.
+     */
     public String loguejarUsuari(String email, String contrasenya) {
         try {
+            // Validar camps buits (NO validar format de contrasenya en login)
             if (email == null || email.isEmpty()) {
                 throw new EmptyEmailException();
             }
@@ -73,19 +77,21 @@ public class Controlador {
                 throw new EmptyPasswordException();
             }
 
+            // CarteraUsuaris cerca l'usuari (Expert en col·lecció d'usuaris)
             Usuari usuari = carteraUsuaris.findByEmail(email);
             if (usuari == null) {
                 throw new EmailNotRegisteredException();
             }
 
-            if (!usuari.getContrasenya().equals(contrasenya)) {
-                throw new IncorrectPasswordException();
-            }
+            // Usuari valida la seva pròpia contrasenya (Expert en la seva informació)
+            usuari.validarContrasenya(contrasenya);
+
             return MessagesCAT.SuccessfulLogin.getMessage();
         } catch (Exception e) {
             return MessagesCAT.translate(e);
         }
     }
+
 
     public String visualitzarLlistaJocsCataleg() {
         try {
