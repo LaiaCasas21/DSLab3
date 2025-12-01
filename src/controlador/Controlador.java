@@ -3,6 +3,7 @@ package controlador;
 import controlador.interfaces.IDataService;
 import model.*;
 import model.excepcions.*;
+import utils.FormattadorLlista;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -92,14 +93,24 @@ public class Controlador {
         }
     }
 
-
+    /**
+     * Visualitza la llista de jocs del catàleg ordenats per nom.
+     */
     public String visualitzarLlistaJocsCataleg() {
         try {
+            // CatalegJocs és l'expert en la col·lecció de jocs
             List<Joc> jocs = catalegJocs.getJocsOrdenatsPerNom();
+
+            // Extracció dels títols
             List<String> titols = jocs.stream()
                     .map(Joc::getTitol)
                     .collect(Collectors.toList());
-            return "Llista de jocs del catàleg:\n" + String.join("\n", titols);
+
+            // FormattadorLlista és l'expert en formatar llistes
+            return FormattadorLlista.formatarLlistaAmbTitol(
+                    "Llista de jocs del catàleg:",
+                    titols
+            );
         } catch (Exception e) {
             return MessagesCAT.translate(e);
         }
