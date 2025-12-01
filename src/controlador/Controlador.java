@@ -41,19 +41,19 @@ public class Controlador {
             String dataNaixement
     ) {
         try {
-            comprovarCorreuEsValid(email);
-            comprovarContrasenyaEsValida(contrasenya);
-            comprovarNomUsuariEsValid(nomUsuari);
-            LocalDate dataNaixementAux = comprovarIProcessarData(dataNaixement);
+            ValidadorUsuari.validarEmail(email);
+            ValidadorUsuari.validarContrasenya(contrasenya);
+            ValidadorUsuari.validarNomUsuari(nomUsuari);
+            LocalDate dataNaixementProcessada = ValidadorUsuari.validarIProcessarDataNaixement(dataNaixement);
 
-            comprovarEmailEstaDisponible(email);
-            comprovarNomUsuariEstaDisponible(nomUsuari);
+            carteraUsuaris.validarEmailEstaDisponible(email);
+            carteraUsuaris.validarNomUsuariEstaDisponible(nomUsuari);
 
             Usuari nouUsuari = new Usuari(
                     email,
                     contrasenya,
                     nomUsuari,
-                    dataNaixementAux,
+                    dataNaixementProcessada,
                     LocalDate.now()
             );
 
@@ -135,65 +135,6 @@ public class Controlador {
             return details.toString();
         } catch (Exception e) {
             return MessagesCAT.translate(e);
-        }
-    }
-
-    /*
-     * Metodes privats de comprovació i processament
-     */
-
-    private void comprovarCorreuEsValid(String email) throws Exception {
-        if (email == null || email.isEmpty()) {
-            throw new EmptyEmailException();
-        } else if (!email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\\.[A-Za-z]{2,}$")) {
-            throw new BadlyFormattedEmailException();
-        }
-    }
-
-    private void comprovarContrasenyaEsValida(String contrasenya) throws Exception {
-        if (contrasenya == null || contrasenya.isEmpty()) {
-            throw new EmptyPasswordException();
-        } else if (contrasenya.length() < 8) {
-            throw new PasswordHasLessThan8CharactersException();
-        } else if (!contrasenya.matches(".*[a-zA-Z].*")) {
-            throw new PasswordNeedsAtLeastOneLetterException();
-        } else if (!contrasenya.matches(".*\\d.*")) {
-            throw new PasswordNeedsAtLeastOneNumberException();
-        } else if (!contrasenya.matches(".*[^A-Za-z0-9].*")) { // Qualsevol caràcter que no sigui lletra o nombre
-            throw new PasswordNeedsAtLeastOneSymbolException();
-        }
-    }
-
-    private void comprovarNomUsuariEsValid(String nomUsuari) throws Exception {
-        if (nomUsuari == null || nomUsuari.isEmpty()) {
-            throw new EmptyUsernameException();
-        }
-    }
-
-    private LocalDate comprovarIProcessarData(String dataNaixement) throws Exception {
-        if (dataNaixement == null || dataNaixement.isEmpty()) {
-            throw new EmptyBirthdateException();
-        }
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.ENGLISH);
-        try {
-            return LocalDate.parse(dataNaixement, formatter);
-        } catch (DateTimeParseException e) {
-            throw new InvalidBirthdateFormatException();
-        }
-    }
-
-    private void comprovarEmailEstaDisponible(String email) throws Exception {
-        Usuari usuari = carteraUsuaris.findByEmail(email);
-        if (usuari != null) {
-            throw new EmailAlreadyRegisteredException();
-        }
-    }
-
-    private void comprovarNomUsuariEstaDisponible(String nomUsuari) throws Exception {
-        Usuari usuari = carteraUsuaris.findByNomUsuari(nomUsuari);
-        if (usuari != null) {
-            throw new UsernameAlreadyRegisteredException();
         }
     }
 }

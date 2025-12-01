@@ -59,4 +59,20 @@ public class CarteraUsuaris {
     public void afegirUsuari(Usuari nouUsuari) {
         usuaris.add(nouUsuari);
     }
+
+    public void validarEmailEstaDisponible(String email) throws Exception {
+        Usuari usuari = findByEmail(email);
+        if (usuari != null) {
+            throw new EmailAlreadyRegisteredException();
+        }
+    }
+
+    public void validarNomUsuariEstaDisponible(String nomUsuari) throws Exception {
+        Usuari usuari = findByNomUsuari(nomUsuari);
+        if (usuari != null) {
+            throw new UsernameAlreadyRegisteredException();
+        }
+    }
 }
+
+
