@@ -1,8 +1,10 @@
 package model;
 
 import model.excepcions.IncorrectPasswordException;
+import model.excepcions.JocNoAdquiritException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,5 +75,58 @@ public class Usuari {
             throw new IncorrectPasswordException();
         }
     }
+
+    /**
+     * Comprova si l'usuari té adquirit un joc amb el títol proporcionat.
+     */
+    public boolean teJocAdquirit(String titolJoc) {
+        if (adquisicions == null || adquisicions.isEmpty()) {
+            return false;
+        }
+        for (Adquisicio adq : adquisicions) {
+            if (adq.getTitolJoc().equals(titolJoc)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Permet a l'usuari adquirir un joc.
+     */
+    public void adquirirJoc(Joc joc, LocalDate dataAdquisicio, Double preu, String moneda) throws Exception {
+        Adquisicio novaAdquisicio = Adquisicio.crearAdquisicio(joc, dataAdquisicio, preu, moneda);
+        addAdquisicio(novaAdquisicio);
+    }
+
+    /**
+     * Troba una adquisició per títol de joc.
+     */
+    public Adquisicio trobarAdquisicioPerId(String titolJoc) {
+        if (adquisicions == null || adquisicions.isEmpty()) {
+            return null;
+        }
+        for (Adquisicio adq : adquisicions) {
+            if (adq.getTitolJoc().equals(titolJoc)) {
+                return adq;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Permet a l'usuari iniciar una sessió de joc per un joc adquirit.
+     */
+    public void iniciarSessioJoc(String titolJoc, LocalDateTime dataInici) throws Exception {
+        Adquisicio adquisicio = trobarAdquisicioPerId(titolJoc);
+        if (adquisicio == null) {
+            throw new JocNoAdquiritException();
+        }
+
+        // Creador: Usuari (a través d'Adquisicio) crea SessioJoc
+        SessioJoc sessio = SessioJoc.crearSessioJocActiva(this.nomUsuari, adquisicio.getJoc(), dataInici);
+        adquisicio.afegirSessioJoc(sessio);
+    }
+
 
 }

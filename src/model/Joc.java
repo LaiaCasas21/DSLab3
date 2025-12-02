@@ -171,4 +171,11 @@ public class Joc {
         return details.toString();
     }
 
+    /**
+     * Comprova si el joc està disponible per ser adquirit.
+     */
+    public boolean estaDisponiblePerAdquirir() {
+        return this.estatJoc == EstatJoc.DISPONIBLE || this.estatJoc == EstatJoc.ANUNCIAT;
+    }
+
 }

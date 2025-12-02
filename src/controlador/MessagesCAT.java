@@ -1,9 +1,8 @@
 package controlador;
 
-// TO DO moure a controller + crear classes per exceptions
 public enum MessagesCAT {
 
-    // Exception messages
+    // Exception messages - US1
     EmptyEmailException("L'e-mail no pot ser buit"),
     BadlyFormattedEmailException("L'e-mail no té un format vàlid"),
     EmptyPasswordException("La contrasenya no pot ser buida"),
@@ -16,15 +15,29 @@ public enum MessagesCAT {
     InvalidBirthdateFormatException("La data de naixement ha de tenir el format dd-MM-yyyy"),
     EmailAlreadyRegisteredException("Ja existeix un usuari amb aquest e-mail"),
     UsernameAlreadyRegisteredException("Ja existeix un usuari amb aquest nom d'usuari"),
+
+    // Exception messages - US2
     EmailNotRegisteredException("No existeix cap usuari amb aquest e-mail"),
     IncorrectPasswordException("La contrasenya no és correcta"),
+
+    // Exception messages - US4, US5, US6
     EmptyCatalegException("No hi ha jocs disponibles al catàleg en aquest moment"),
     JocNotFoundException("No s'ha trobat cap joc amb aquest títol"),
     UsuariSenseAdquisicionsException("L'usuari no ha adquirit cap joc"),
+
+    // Exception messages - US7 (Adquirir joc)
+    JocJaAdquiritException("Ja has adquirit aquest joc"),
+    JocNoDisponibleException("Aquest joc ja no està disponible per adquirir"),
+
+    // Exception messages - US9 (Jugar sessió)
+    JocNoAdquiritException("No has adquirit aquest joc"),
+
+    // Success messages
     SuccessfulUserRegistration("Usuari registrat correctament"),
     SuccessfulLogin("Sessió iniciada correctament"),
+    SuccessfulJocAdquisition("Joc adquirit correctament"), // US7
+    SuccessfulSessioJocStarted("Sessió de joc iniciada correctament"), // US9
     ;
-
 
     private final String message;
 
@@ -37,8 +50,7 @@ public enum MessagesCAT {
     }
 
     public static String translate(Exception e) {
-        // Depending on the type of the Exception we will return the corresponding message
-        String exceptionName = e.getClass().getSimpleName();  // Obté el nom de la classe de l'excepció
+        String exceptionName = e.getClass().getSimpleName();
         return valueOf(exceptionName).getMessage();
     }
 }

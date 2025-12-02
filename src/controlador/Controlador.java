@@ -6,11 +6,14 @@ import model.excepcions.*;
 import model.FormattadorLlista;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+
+import static controlador.MessagesCAT.JocNoDisponibleException;
 
 public class Controlador {
     private final IDataService dataService;
@@ -146,6 +149,61 @@ public class Controlador {
 
             // Joc és l'expert en presentar els seus propis detalls
             return joc.formatarDetalls();
+        } catch (Exception e) {
+            return MessagesCAT.translate(e);
+        }
+    }
+
+    /**
+     * Permet a un usuari adquirir un joc del catàleg.
+     */
+    public String adquirirJoc(String emailUsuari, String titolJoc) {
+        try {
+            // CarteraUsuaris cerca l'usuari (Expert en col·lecció d'usuaris)
+            Usuari usuari = carteraUsuaris.findByEmail(emailUsuari);
+            if (usuari == null) {
+                throw new EmailNotRegisteredException();
+            }
+
+            // CatalegJocs cerca el joc (Expert en col·lecció de jocs)
+            Joc joc = catalegJocs.findByTitol(titolJoc);
+
+            // Joc valida si està disponible (Expert en el seu propi estat)
+            if (!joc.estaDisponiblePerAdquirir()) {
+                throw new JocNoDisponibleException();
+            }
+
+            // Usuari valida si ja té el joc (Expert en les seves adquisicions)
+            if (usuari.teJocAdquirit(titolJoc)) {
+                throw new JocJaAdquiritException();
+            }
+
+            // Usuari crea l'adquisició (Creador: conté les adquisicions)
+            usuari.adquirirJoc(joc, LocalDate.now(), 0.0, "EUR");
+
+            return MessagesCAT.SuccessfulJocAdquisition.getMessage();
+        } catch (Exception e) {
+            return MessagesCAT.translate(e);
+        }
+    }
+    /**
+     * Permet a un usuari iniciar una sessió de joc per un joc adquirit.
+     */
+    public String iniciarSessioJoc(String emailUsuari, String titolJoc) {
+        try {
+            // CarteraUsuaris cerca l'usuari
+            Usuari usuari = carteraUsuaris.findByEmail(emailUsuari);
+            if (usuari == null) {
+                throw new EmailNotRegisteredException();
+            }
+
+            // CatalegJocs verifica que el joc existeix
+            catalegJocs.findByTitol(titolJoc);
+
+            // Usuari inicia la sessió
+            usuari.iniciarSessioJoc(titolJoc, LocalDateTime.now());
+
+            return MessagesCAT.SuccessfulSessioJocStarted.getMessage();
         } catch (Exception e) {
             return MessagesCAT.translate(e);
         }
